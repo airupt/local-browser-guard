@@ -1,0 +1,24 @@
+{
+  "name": "airupt-tools",
+  "owner": {
+    "name": "airupt",
+    "url": "https://github.com/airupt"
+  },
+  "description": "Claude Code tooling by airupt",
+  "plugins": [
+    {
+      "name": "local-browser-guard",
+      "source": "./",
+      "description": "Picks the Claude in Chrome browser that is physically on this machine by finding its deviceId in a local browser profile, blocks switch_browser, and refuses select_browser for any deviceId that is not on disk here.",
+      "category": "tools",
+      "keywords": [
+        "claude-in-chrome",
+        "browser-automation",
+        "hooks",
+        "shared-account",
+        "device-id",
+        "safety"
+      ]
+    }
+  ]
+}

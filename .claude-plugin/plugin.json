@@ -1,0 +1,21 @@
+{
+  "name": "local-browser-guard",
+  "version": "1.0.0",
+  "description": "Picks the Claude in Chrome browser that is physically on this machine by finding its deviceId in a local browser profile, blocks switch_browser, and refuses select_browser for any deviceId that is not on disk here.",
+  "author": {
+    "name": "airupt",
+    "url": "https://github.com/airupt"
+  },
+  "homepage": "https://github.com/airupt/local-browser-guard",
+  "repository": "https://github.com/airupt/local-browser-guard",
+  "license": "MIT",
+  "keywords": [
+    "claude-in-chrome",
+    "browser-automation",
+    "hooks",
+    "shared-account",
+    "device-id",
+    "safety"
+  ],
+  "hooks": "./hooks/hooks.json"
+}

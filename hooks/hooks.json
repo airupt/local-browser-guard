@@ -1,0 +1,38 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__claude-in-chrome__switch_browser",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hook-block-switch.sh\"",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__claude-in-chrome__select_browser",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hook-guard-select.sh\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__claude-in-chrome__list_connected_browsers",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hook-annotate-list.sh\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
