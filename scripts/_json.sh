@@ -41,3 +41,16 @@ emit_context() {  # emit_context <text>
       "$(printf '%s' "$text" | sed 's/\\/\\\\/g; s/"/\\"/g' | awk '{printf "%s\\n", $0}' | sed 's/\\n$//')"
   fi
 }
+
+# ---- session state -------------------------------------------------------
+# A marker file records that this session verified its browser choice, so the
+# other claude-in-chrome tools can be gated until that has happened.
+lbg_marker_path() {  # lbg_marker_path <payload>
+  local sid
+  sid="$(json_get "$1" '.session_id')"
+  [ -z "$sid" ] && return 1
+  case "$sid" in *[!A-Za-z0-9_-]*) sid="$(printf '%s' "$sid" | tr -c 'A-Za-z0-9_-' '_')" ;; esac
+  local dir="${TMPDIR:-/tmp}/local-browser-guard"
+  mkdir -p "$dir" 2>/dev/null || return 1
+  printf '%s/%s.selected' "$dir" "$sid"
+}

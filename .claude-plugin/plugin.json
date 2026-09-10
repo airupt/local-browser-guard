@@ -1,7 +1,7 @@
 {
   "name": "local-browser-guard",
-  "version": "1.0.0",
-  "description": "Picks the Claude in Chrome browser that is physically on this machine by finding its deviceId in a local browser profile, blocks switch_browser, and refuses select_browser for any deviceId that is not on disk here.",
+  "version": "1.1.0",
+  "description": "Makes Claude drive the Chrome that is physically on this machine: finds the Claude in Chrome deviceId in the local browser profiles, gates every browser tool behind that check, blocks switch_browser, and ignores the unreliable isLocal flag.",
   "author": {
     "name": "airupt",
     "url": "https://github.com/airupt"

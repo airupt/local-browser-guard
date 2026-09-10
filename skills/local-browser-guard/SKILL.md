@@ -70,8 +70,19 @@ Guidance alone is not enough, so the plugin also enforces this:
 
 - `switch_browser` is always denied.
 - `select_browser` is denied unless the deviceId is found in a local profile.
+- **Every other `claude-in-chrome` tool is denied until this session has done a
+  verified `select_browser`.** A selection carried over from an earlier session
+  never touches `select_browser` again, so without this gate it would keep
+  driving whatever browser it was last pointed at. Expect the first browser
+  request in a session to cost one `list_connected_browsers` plus one
+  `select_browser`, and nothing after that.
 - `list_connected_browsers` results are annotated with the local match.
 
 Escape hatches, for the rare case where the machine genuinely needs to drive a
-remote browser: set `LBG_ALLOW_UNVERIFIED=1` to permit any `select_browser`, or
-`LBG_ALLOW_SWITCH=1` to permit `switch_browser`.
+remote browser:
+
+| Variable | Effect |
+|----------|--------|
+| `LBG_ALLOW_UNVERIFIED=1` | Allow `select_browser` for any deviceId |
+| `LBG_ALLOW_SWITCH=1` | Allow `switch_browser` |
+| `LBG_ALLOW_UNSELECTED=1` | Drop the session gate |

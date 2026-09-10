@@ -7,7 +7,17 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$DIR/_json.sh"
 
 payload="$(cat)"
-[ "${LBG_ALLOW_UNVERIFIED:-0}" = "1" ] && exit 0
+
+mark_selected() {
+  local m
+  m="$(lbg_marker_path "$payload")" || return 0
+  printf '%s\n' "${1:-unknown}" > "$m" 2>/dev/null || true
+}
+
+if [ "${LBG_ALLOW_UNVERIFIED:-0}" = "1" ]; then
+  mark_selected "bypassed"   # keep the session gate from blocking afterwards
+  exit 0
+fi
 
 device_id="$(json_get "$payload" '.tool_input.deviceId')"
 if [ -z "$device_id" ]; then
@@ -23,7 +33,8 @@ report="$("$DIR/find-local-device.sh" "$device_id" 2>/dev/null)"
 status=$?
 
 if [ "$status" -eq 0 ]; then
-  exit 0   # exactly one local match, and it is this id
+  mark_selected "$device_id"   # unblocks the rest of the browser tools
+  exit 0                       # exactly one local match, and it is this id
 fi
 
 emit_deny "local-browser-guard blocked select_browser for $device_id: that deviceId is not stored in any browser profile on this machine, so it belongs to someone else's Chrome.

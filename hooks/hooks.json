@@ -20,6 +20,16 @@
             "timeout": 120
           }
         ]
+      },
+      {
+        "matcher": "mcp__claude-in-chrome__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hook-require-selection.sh\"",
+            "timeout": 30
+          }
+        ]
       }
     ],
     "PostToolUse": [

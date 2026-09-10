@@ -51,7 +51,15 @@ other four `isLocal: true` entries are correctly rejected.
 | `list_connected_browsers` returns | A PostToolUse hook scans the local profiles and tells Claude which deviceId is here, with the browser and profile as evidence |
 | `select_browser` is called | A PreToolUse hook denies it unless that deviceId is in a profile on this machine |
 | `switch_browser` is called | Always denied, no broadcast pairing |
+| Any other browser tool is called | Denied until this session has done a verified `select_browser` |
 | 0 or 2+ local matches | Claude is told to stop and ask you which browser to use |
+
+That last row matters more than it looks. The `select_browser` guard only fires
+when a browser is actually being chosen, and a selection carried over from an
+earlier session never chooses again: Claude would go straight to `navigate` or
+`computer` and keep driving whatever window it was last pointed at. The session
+gate closes that path. The first browser request in a session costs one
+`list_connected_browsers` and one `select_browser`, and nothing after that.
 
 The bundled skill teaches the same rule, so Claude follows it even in a session
 where a hook does not fire, and `/which-browser` reports the answer on demand.
@@ -123,7 +131,9 @@ Chromium, Dia, Comet, Yandex and anything else Chromium based) and all profiles
 (`Default`, `Profile 1`, and so on).
 
 The fast path only reads each profile's `Local Extension Settings` and
-`Sync Extension Settings` directories. If a supplied deviceId is not found
+`Sync Extension Settings` directories. The extension writes its deviceId to
+*local* extension storage, which never leaves the machine, so a browser profile
+synced from a colleague's computer cannot produce a false match. If a supplied deviceId is not found
 there, the scan widens to the whole profile root before reporting a miss, so a
 zero result is a real zero rather than a wrong lookup path.
 
@@ -135,6 +145,7 @@ For the rare case where this machine genuinely has to drive a remote browser:
 |----------|--------|
 | `LBG_ALLOW_UNVERIFIED=1` | Allow `select_browser` for any deviceId |
 | `LBG_ALLOW_SWITCH=1` | Allow `switch_browser` |
+| `LBG_ALLOW_UNSELECTED=1` | Drop the session gate |
 | `LBG_MAXDEPTH=<n>` | Directory depth for the profile search (default 8) |
 
 ## Requirements
@@ -155,6 +166,7 @@ scripts/find-local-device.sh        the detector
 scripts/hook-annotate-list.sh       PostToolUse: list_connected_browsers
 scripts/hook-guard-select.sh        PreToolUse: select_browser
 scripts/hook-block-switch.sh        PreToolUse: switch_browser
+scripts/hook-require-selection.sh   PreToolUse: every other browser tool
 skills/local-browser-guard/SKILL.md the rule, for Claude
 commands/which-browser.md           /which-browser
 ```
